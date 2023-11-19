@@ -1,0 +1,93 @@
+﻿@using Gorev12.Models.Entities;
+@model List<PostEntity>
+
+    @{
+        var nextDir = ViewBag.Dir == "asc" ? "desc" : "asc";
+    }
+
+<h5>Arama</h5>
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Index" asp-controller="Post" method="get" class="d-flex align-items-center">
+            <input type="search" name="search" class="form-control" value="@ViewBag.search" placeholder="Content veya Title arama" />
+            <select name="searchCreatedBy" class="form-select ms-2" asp-items="@ViewBag.createdByList">
+                <option value="">Tümü</option>
+            </select>
+
+            <input type="submit" value="Filter" class="btn btn-primary ms-2" />
+        </form>
+    </div>
+    <div class="col-12" >
+        <div>Field: @ViewBag.Order</div>
+        <div>Direction: @ViewBag.Dir</div>
+        <table class="table mt-5" id="table">
+            <thead>
+                <tr>
+                   
+                    <th scope="col"><a asp-action="Index" asp-controller="Post" asp-route-searchCreatedBy="@ViewBag.SearchCreatedBy" asp-route-dir="@nextDir" asp-route-order="Id">Id</a></th>
+                    <th scope="col"><a asp-action="Index" asp-controller="Post" asp-route-searchCreatedBy="@ViewBag.SearchCreatedBy" asp-route-dir="@nextDir" asp-route-order="Title">Title</a></th>
+                    <th scope="col"><a asp-action="Index" asp-controller="Post" asp-route-searchCreatedBy="@ViewBag.SearchCreatedBy" asp-route-dir="@nextDir" asp-route-order="Content">Content</a></th>
+                    <th scope="col"><a asp-action="Index" asp-controller="Post" asp-route-searchCreatedBy="@ViewBag.SearchCreatedBy" asp-route-dir="@nextDir" asp-route-order="Comments">Comments</a></th>
+                    <th scope="col"><a asp-action="Index" asp-controller="Post" asp-route-searchCreatedBy="@ViewBag.SearchCreatedBy" asp-route-dir="@nextDir" asp-route-order="CreatedBy">Created By</a></th>
+                    <th scope="col"><a asp-action="Index" asp-controller="Post" asp-route-searchCreatedBy="@ViewBag.SearchCreatedBy" asp-route-dir="@nextDir" asp-route-order="CreatedAt">Created At</a></th>
+                </tr>
+            </thead>    
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var post in Model)
+                    {
+                        <tr>
+                            <td>@post.Id</td>
+                            <td>@post.Title</td>
+                            <td>@post.Content</td>
+                            <td>@post.Comments.Count()</td>
+                            <td>@post.User.Username</td>
+                            <td>@post.CreatedAt.ToLocalTime()</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<div class="pagination">
+    @if (ViewBag.Page > 1)
+    {
+        <a a class="page-link @(ViewBag.CurrentPage == 1 ? "disabled" : "")" href="@Url.Action("Index", new { page = ViewBag.Page - 1, search = ViewBag.search, searchCreatedBy = ViewBag.searchCreatedBy, order = ViewBag.Order, dir = ViewBag.Dir })">&lt;&lt; Önceki</a>
+    }
+
+    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+    {
+        if (i == ViewBag.Page)
+        {
+            <span>@i</span>
+        }
+        else
+        {
+            <a a class="page-link @(ViewBag.CurrentPage == 1 ? "disabled" : "")" href="@Url.Action("Index", new { page = i, search = ViewBag.search, searchCreatedBy = ViewBag.searchCreatedBy, order = ViewBag.Order, dir = ViewBag.Dir })">@i</a>
+        }
+    }
+
+    @if (ViewBag.Page < ViewBag.TotalPages)
+    {
+        <a a class="page-link @(ViewBag.CurrentPage == 1 ? "disabled" : "")" href="@Url.Action("Index", new { page = ViewBag.Page + 1, search = ViewBag.search, searchCreatedBy = ViewBag.searchCreatedBy, order = ViewBag.Order, dir = ViewBag.Dir })">Sonraki &gt;&gt;</a>
+    }
+</div>
+
+<!-- Toplam Sayfa Bilgisi -->
+<div class="total-pages-info">
+    @string.Format("Toplam {0} sayfadan {1}. sayfadasınız.", ViewBag.TotalPages, ViewBag.Page)
+</div>
+
+
+
+
+
+
+
+
+
